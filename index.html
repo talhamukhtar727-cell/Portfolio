@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Talha Mukhtar — Structural & RNA Biology</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============ TOKENS ============ */
+:root{
+  --ink:#0A1628;
+  --ink-2:#101F38;
+  --paper:#EEF1EE;
+  --paper-2:#E4E8E2;
+  --teal:#14919B;
+  --teal-dim:#0E6B72;
+  --amber:#E2A23B;
+  --indigo:#1B2740;
+  --slate:#5B6B7C;
+  --slate-light:#8996A3;
+  --line:rgba(27,39,64,0.12);
+  --line-dark:rgba(255,255,255,0.14);
+  --radius:2px;
+  --serif:'Fraunces', serif;
+  --sans:'IBM Plex Sans', sans-serif;
+  --mono:'IBM Plex Mono', monospace;
+}
+
+*{box-sizing:border-box; margin:0; padding:0;}
+html{scroll-behavior:smooth;}
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto;}
+  *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important;}
+}
+body{
+  font-family:var(--sans);
+  background:var(--paper);
+  color:var(--indigo);
+  line-height:1.6;
+  overflow-x:hidden;
+}
+a{color:inherit; text-decoration:none;}
+img{max-width:100%; display:block;}
+ul{list-style:none;}
+.wrap{max-width:1120px; margin:0 auto; padding:0 32px;}
+@media (max-width:640px){.wrap{padding:0 20px;}}
+
+/* eyebrow / codon label — signature motif: section markers styled as a reading-frame triplet,
+   echoing the thesis subject (start-codon / reading-frame biology) */
+.codon-tag{
+  display:inline-flex; align-items:center; gap:8px;
+  font-family:var(--mono); font-size:12.5px; letter-spacing:0.14em;
+  color:var(--teal-dim); text-transform:uppercase; margin-bottom:14px;
+}
+.codon-tag .base-trip{
+  display:inline-flex; border:1px solid var(--teal); border-radius:2px; overflow:hidden;
+}
+.codon-tag .base-trip span{
+  padding:2px 6px; font-weight:600; color:var(--teal-dim);
+  border-right:1px solid var(--teal);
+}
+.codon-tag .base-trip span:last-child{border-right:none;}
+.on-dark .codon-tag{color:var(--teal);}
+.on-dark .codon-tag .base-trip span{color:#BFE9E6; border-color:var(--teal);}
+
+/* chromatogram-style section divider, in place of a plain hairline */
+.trace-divider{width:100%; height:34px; opacity:0.6;}
+
+/* ============ NAV — "reading frame" strip ============ */
+header.site-nav{
+  position:fixed; top:0; left:0; right:0; z-index:100;
+  background:rgba(10,22,40,0.92); backdrop-filter:blur(6px);
+  border-bottom:1px solid var(--line-dark);
+}
+.nav-inner{
+  max-width:1120px; margin:0 auto; padding:0 32px;
+  display:flex; align-items:center; justify-content:space-between;
+  height:64px;
+}
+.nav-brand{
+  font-family:var(--serif); font-weight:600; font-size:19px; color:#F2F4F1; letter-spacing:0.01em;
+}
+.nav-brand .dot{color:var(--teal);}
+.nav-frame{
+  display:flex; gap:2px; font-family:var(--mono); font-size:12.5px; letter-spacing:0.06em;
+}
+.nav-frame a{
+  padding:9px 12px; color:var(--slate-light); border-bottom:2px solid transparent;
+  transition:color .18s ease, border-color .18s ease;
+  text-transform:uppercase;
+}
+.nav-frame a:hover{color:#EAF6F5;}
+.nav-frame a.active{color:var(--teal); border-bottom-color:var(--teal);}
+.nav-toggle{display:none; background:none; border:1px solid var(--line-dark); color:#EAF6F5; width:38px; height:38px; border-radius:2px; font-family:var(--mono);}
+@media (max-width:880px){
+  .nav-frame{
+    position:fixed; top:64px; left:0; right:0; background:var(--ink);
+    flex-direction:column; padding:8px 24px 18px; gap:0;
+    border-bottom:1px solid var(--line-dark);
+    transform:translateY(-8px); opacity:0; pointer-events:none; transition:all .2s ease;
+  }
+  .nav-frame.open{transform:translateY(0); opacity:1; pointer-events:auto;}
+  .nav-frame a{padding:12px 0; border-bottom:1px solid var(--line-dark);}
+  .nav-toggle{display:block;}
+}
+
+/* ============ PAGES (hash-routed sections) ============ */
+.page{display:none; padding-top:64px;}
+.page.active{display:block;}
+
+/* ============ HERO ============ */
+.hero{
+  background:linear-gradient(180deg, var(--ink) 0%, var(--ink-2) 100%);
+  color:#EAF0EF; position:relative; overflow:hidden;
+  padding:96px 0 84px;
+}
+.hero::after{
+  content:""; position:absolute; inset:0; pointer-events:none; opacity:0.5;
+  background-image:
+    radial-gradient(circle at 82% 18%, rgba(20,145,155,0.22), transparent 42%),
+    radial-gradient(circle at 12% 82%, rgba(226,162,59,0.10), transparent 40%);
+}
+.hero-grid{display:grid; grid-template-columns:1.15fr 0.85fr; gap:56px; align-items:center; position:relative;}
+@media (max-width:880px){.hero-grid{grid-template-columns:1fr; gap:40px;}}
+.hero h1{
+  font-family:var(--serif); font-weight:600; font-size:clamp(34px,4.6vw,56px);
+  line-height:1.06; letter-spacing:-0.01em; color:#F5F8F6;
+}
+.hero h1 em{font-style:italic; color:var(--teal); font-weight:500;}
+.hero .tagline{
+  margin-top:18px; font-size:18px; color:#B9C6CA; max-width:46ch; line-height:1.65;
+}
+.hero .tagline strong{color:#EAF0EF; font-weight:600;}
+.hero-actions{display:flex; gap:12px; margin-top:32px; flex-wrap:wrap;}
+.btn{
+  font-family:var(--mono); font-size:13px; letter-spacing:0.04em; text-transform:uppercase;
+  padding:13px 22px; border-radius:2px; border:1px solid transparent; display:inline-flex; gap:8px; align-items:center;
+  transition:transform .15s ease, background .15s ease, border-color .15s ease;
+}
+.btn:hover{transform:translateY(-2px);}
+.btn-primary{background:var(--teal); color:#04211F;}
+.btn-primary:hover{background:#1AA6AF;}
+.btn-ghost{border-color:var(--line-dark); color:#EAF0EF;}
+.btn-ghost:hover{border-color:var(--teal); color:var(--teal);}
+
+.portrait-holder{
+  aspect-ratio:4/5; border:1.5px dashed rgba(234,246,245,0.35); border-radius:3px;
+  display:flex; align-items:center; justify-content:center; text-align:center;
+  background:rgba(255,255,255,0.03); padding:22px;
+}
+.portrait-holder .ph-label{font-family:var(--mono); font-size:12px; color:#9FB2B4; letter-spacing:0.05em; line-height:1.7;}
+.portrait-holder svg{opacity:0.55; margin-bottom:10px;}
+
+.stat-strip{
+  margin-top:56px; padding-top:32px; border-top:1px solid var(--line-dark);
+  display:grid; grid-template-columns:repeat(4,1fr); gap:24px;
+}
+@media (max-width:720px){.stat-strip{grid-template-columns:repeat(2,1fr);}}
+.stat-strip .stat b{font-family:var(--serif); font-size:30px; color:var(--teal); font-weight:600; display:block;}
+.stat-strip .stat span{font-size:12.5px; color:#9FB2B4; line-height:1.5; display:block; margin-top:4px;}
+
+/* ============ GENERIC SECTION ============ */
+section{padding:88px 0;}
+section.tight{padding:60px 0;}
+h2.sec-title{
+  font-family:var(--serif); font-weight:600; font-size:clamp(26px,3vw,36px); color:var(--indigo);
+  letter-spacing:-0.01em; margin-bottom:8px;
+}
+.sec-sub{color:var(--slate); max-width:62ch; font-size:15.5px; margin-bottom:44px;}
+.on-dark h2.sec-title, .on-dark .sec-sub{color:#EAF0EF;}
+.on-dark .sec-sub{color:#B9C6CA;}
+.bg-dark{background:var(--ink); color:#EAF0EF;}
+.bg-alt{background:var(--paper-2);}
+
+/* ============ CARDS ============ */
+.card-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:28px;}
+@media (max-width:780px){.card-grid{grid-template-columns:1fr;}}
+.card{
+  background:#fff; border:1px solid var(--line); border-radius:3px; padding:28px 26px;
+  transition:box-shadow .2s ease, transform .2s ease;
+}
+.card:hover{box-shadow:0 12px 32px -18px rgba(27,39,64,0.35); transform:translateY(-3px);}
+.card .role{font-family:var(--serif); font-size:19px; font-weight:600; color:var(--indigo); margin-bottom:4px;}
+.card .meta{font-family:var(--mono); font-size:12px; color:var(--teal-dim); letter-spacing:0.03em; margin-bottom:14px; text-transform:uppercase;}
+.card ul{margin-top:12px;}
+.card li{position:relative; padding-left:16px; font-size:14.5px; color:var(--slate); margin-bottom:9px;}
+.card li::before{content:"—"; position:absolute; left:0; color:var(--teal); font-weight:600;}
+.card-thumb{
+  margin-top:16px; aspect-ratio:16/9; border:1.5px dashed var(--line); border-radius:2px;
+  display:flex; align-items:center; justify-content:center; background:var(--paper);
+}
+.card-thumb .ph-label{font-family:var(--mono); font-size:11.5px; color:var(--slate-light); text-align:center; padding:10px;}
+
+/* ============ TIMELINE (education/honours) ============ */
+.timeline{border-left:2px solid var(--line); margin-left:6px; padding-left:28px;}
+.tl-item{position:relative; padding-bottom:34px;}
+.tl-item:last-child{padding-bottom:0;}
+.tl-item::before{
+  content:""; position:absolute; left:-34px; top:4px; width:11px; height:11px; border-radius:50%;
+  background:var(--teal); border:2px solid var(--paper); box-shadow:0 0 0 2px var(--teal);
+}
+.tl-item .tl-date{font-family:var(--mono); font-size:12px; color:var(--teal-dim); letter-spacing:0.04em;}
+.tl-item h3{font-family:var(--serif); font-size:18px; font-weight:600; margin:4px 0 4px; color:var(--indigo);}
+.tl-item p{font-size:14.5px; color:var(--slate);}
+
+/* ============ GALLERY ============ */
+.gallery-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:20px;}
+@media (max-width:880px){.gallery-grid{grid-template-columns:repeat(2,1fr);}}
+@media (max-width:560px){.gallery-grid{grid-template-columns:1fr;}}
+.gallery-grid .g-wide{grid-column:span 2;}
+@media (max-width:560px){.gallery-grid .g-wide{grid-column:span 1;}}
+.g-item{
+  aspect-ratio:4/3; border-radius:3px; border:1.5px dashed var(--line);
+  background:linear-gradient(135deg, #fff, var(--paper-2));
+  display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;
+  padding:18px; position:relative; overflow:hidden;
+}
+.g-item .g-icon{opacity:0.5; margin-bottom:10px;}
+.g-item .g-label{font-family:var(--mono); font-size:12px; letter-spacing:0.03em; color:var(--slate); text-transform:uppercase;}
+.g-item .g-sub{font-size:11.5px; color:var(--slate-light); margin-top:4px;}
+.g-item::after{
+  content:"REPLACE IMAGE"; position:absolute; bottom:10px; font-family:var(--mono); font-size:9.5px;
+  letter-spacing:0.1em; color:var(--slate-light); opacity:0.7;
+}
+
+/* ============ SKILLS ============ */
+.skill-block{margin-bottom:32px;}
+.skill-block h3{
+  font-family:var(--mono); font-size:12.5px; text-transform:uppercase; letter-spacing:0.08em;
+  color:var(--teal-dim); margin-bottom:14px; display:flex; align-items:center; gap:10px;
+}
+.skill-block h3::after{content:""; flex:1; height:1px; background:var(--line);}
+.pill-row{display:flex; flex-wrap:wrap; gap:9px;}
+.pill{
+  font-size:13px; padding:7px 13px; border:1px solid var(--line); border-radius:20px; color:var(--indigo);
+  background:#fff;
+}
+
+/* ============ PUBLICATIONS / POSTERS ============ */
+.pub-item{
+  border:1px solid var(--line); border-radius:3px; padding:24px; background:#fff; margin-bottom:20px;
+}
+.pub-item .pub-tag{font-family:var(--mono); font-size:11px; color:var(--amber); text-transform:uppercase; letter-spacing:0.06em;}
+.pub-item h3{font-family:var(--serif); font-size:18px; font-weight:600; margin:8px 0 6px;}
+.pub-item p{font-size:14px; color:var(--slate);}
+
+.poster-holder{
+  aspect-ratio:3/4; border:1.5px dashed var(--line); border-radius:3px;
+  display:flex; align-items:center; justify-content:center; background:var(--paper);
+  text-align:center; padding:20px;
+}
+.slide-holder{
+  aspect-ratio:16/9; border:1.5px dashed var(--line); border-radius:3px;
+  display:flex; align-items:center; justify-content:center; background:var(--paper);
+  text-align:center; padding:20px; margin-top:14px;
+}
+.ph-label{font-family:var(--mono); font-size:11.5px; color:var(--slate-light); line-height:1.7;}
+
+/* ============ CONTACT ============ */
+.contact-grid{display:grid; grid-template-columns:1fr 1fr; gap:40px;}
+@media (max-width:780px){.contact-grid{grid-template-columns:1fr;}}
+.contact-line{display:flex; align-items:center; gap:12px; padding:14px 0; border-bottom:1px solid var(--line-dark);}
+.contact-line .clabel{font-family:var(--mono); font-size:11.5px; color:var(--teal); text-transform:uppercase; width:80px; flex-shrink:0;}
+.contact-line a{color:#EAF0EF; font-size:15px;}
+.contact-line a:hover{color:var(--teal);}
+
+footer{
+  background:var(--ink); color:var(--slate-light); text-align:center; padding:28px 0;
+  font-family:var(--mono); font-size:11.5px; letter-spacing:0.04em; border-top:1px solid var(--line-dark);
+}
+
+.reveal{opacity:0; transform:translateY(18px); transition:opacity .55s ease, transform .55s ease;}
+.reveal.in{opacity:1; transform:translateY(0);}
+</style>
+</head>
+<body>
+
+<!-- ============ NAV ============ -->
+<header class="site-nav">
+  <div class="nav-inner">
+    <a href="#home" class="nav-brand">Talha Mukhtar<span class="dot">.</span></a>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">≡</button>
+    <nav class="nav-frame" id="navFrame">
+      <a href="#home" data-page="home">Home</a>
+      <a href="#research" data-page="research">Research</a>
+      <a href="#gallery" data-page="gallery">Gallery</a>
+      <a href="#publications" data-page="publications">Publications</a>
+      <a href="#skills" data-page="skills">Skills</a>
+      <a href="#honours" data-page="honours">Honours</a>
+      <a href="#contact" data-page="contact">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ============ PAGE: HOME / INTRO ============ -->
+<main>
+<section class="page active" id="page-home">
+  <div class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <div class="codon-tag on-dark">
+          <span class="base-trip"><span>A</span><span>U</span><span>G</span></span> Start of frame
+        </div>
+        <h1>Reading the message<br>a ribosome <em>almost</em><br>can't read.</h1>
+        <p class="tagline"><strong>Talha Mukhtar</strong> — B.Sc. (Research) Biochemistry, Aligarh Muslim University. I study how ribosomes recognise non-optimal start codons and Shine-Dalgarno contexts, using all-atom molecular dynamics, structural bioinformatics, and multi-spectroscopic protein biophysics. Headed toward a PhD in structural or RNA biology.</p>
+        <div class="hero-actions">
+          <a href="#research" class="btn btn-primary" data-page="research">View Research →</a>
+          <a href="#contact" class="btn btn-ghost" data-page="contact">Get in Touch</a>
+          <a href="mailto:mukhtartalha727@gmail.com" class="btn btn-ghost">Email Me</a>
+        </div>
+        <div class="stat-strip">
+          <div class="stat"><b>170 ns</b><span>All-atom MD simulation of ribosomal complex (5LMQ)</span></div>
+          <div class="stat"><b>~4,000</b><span>E. coli SD-led genes analysed genome-wide</span></div>
+          <div class="stat"><b>5</b><span>Independent research placements since 2023</span></div>
+          <div class="stat"><b>1</b><span>Manuscript under review — Discover Oncology</span></div>
+        </div>
+      </div>
+      <div class="portrait-holder">
+        <div>
+          <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#EAF6F5" stroke-width="1.2"><circle cx="12" cy="12" r="9"/><path d="M8 12h8M12 8v8"/></svg>
+          <div class="ph-label">PORTRAIT PHOTO<br>Replace with a professional<br>headshot (recommended 4:5,<br>min. 1000×1250px)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ABOUT / OBJECTIVE -->
+  <section class="reveal">
+    <div class="wrap">
+      <div class="codon-tag"><span class="base-trip"><span>G</span><span>C</span><span>A</span></span> About</div>
+      <h2 class="sec-title">A biochemist who thinks in structures</h2>
+      <p class="sec-sub">My work sits at the interface of computation and the bench: I move between GROMACS trajectories and gel electrophoresis in the same week. I'm most interested in the moments where a molecule's structure explains a biological decision — why a ribosome initiates translation at a "wrong" codon, or why a protein's fold shifts under glucose and copper together.</p>
+      <div class="card-grid" style="grid-template-columns:1fr 1fr;">
+        <div class="card">
+          <div class="role">Aligarh Muslim University</div>
+          <div class="meta">B.Sc. (Research) Biochemistry · 2022 – 2026</div>
+          <p style="font-size:14.5px;color:var(--slate);">Thesis: <em>Elucidating the translation initiation mechanism in non-optimally positioned Shine-Dalgarno sequence contexts</em>, supervised by Dr. Tanweer Hussain, Dept. of Developmental Biology & Genetics, IISc Bengaluru.</p>
+        </div>
+        <div class="card">
+          <div class="role">What I'm looking for</div>
+          <div class="meta">PhD Positions</div>
+          <p style="font-size:14.5px;color:var(--slate);">Structural biology or RNA biology programmes working on translation, ribonucleoprotein complexes, or structural dynamics — where I can bring both simulation and wet-lab experimental skill sets.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</section>
+
+<!-- ============ PAGE: RESEARCH ============ -->
+<section class="page" id="page-research">
+  <section class="bg-dark on-dark tight">
+    <div class="wrap">
+      <div class="codon-tag on-dark"><span class="base-trip"><span>C</span><span>U</span><span>G</span></span> Frame 01</div>
+      <h2 class="sec-title">Research Experience</h2>
+      <p class="sec-sub">Five placements, four supervisors, one recurring question: how does structure dictate function. Each card below has a space for lab photos — drop yours in from the corresponding placement.</p>
+    </div>
+  </section>
+
+  <section class="reveal">
+    <div class="wrap">
+      <div class="card-grid">
+
+        <div class="card">
+          <div class="role">Research Intern — Bachelor's Thesis</div>
+          <div class="meta">Jan 2026 – May 2026 · IISc Bengaluru</div>
+          <p style="font-size:13.5px;color:var(--slate);">Supervisor: Dr. Tanweer Hussain, Dept. of Developmental Biology &amp; Genetics</p>
+          <ul>
+            <li>170 ns all-atom MD simulation (GROMACS / AMBER14SB) of a ribosomal cut-out (PDB: 5LMQ); identified instability of the 5′ start codon–anticodon base pair as the structural basis for non-canonical start codon (GUG, UUG) usage.</li>
+            <li>Genome-wide analysis of ~4,000 <em>E. coli</em> SD-led genes — protein abundance explains only ~1.6% of translation initiation rate variance (R²=0.016).</li>
+            <li>Optimised a β-galactosidase reporter assay and <em>chpS</em> 5′ UTR cloning pipeline for experimental validation.</li>
+          </ul>
+          <a href="#gallery" data-page="gallery" style="font-family:var(--mono); font-size:12px; color:var(--teal-dim); display:inline-block; margin-top:12px;">→ See IISc lab photos in Gallery</a>
+          <div class="card-thumb"><div class="ph-label">MD SIMULATION SNAPSHOT / RIBOSOME STRUCTURE<br>(e.g. Chimera render, PyMOL figure)</div></div>
+        </div>
+
+        <div class="card">
+          <div class="role">Research Intern (REU-4)</div>
+          <div class="meta">Feb 2025 – Sep 2025 · AMU × Ohio State University</div>
+          <p style="font-size:13.5px;color:var(--slate);">Supervisor: Dr. Asim Rizvi, Dept. of Biochemistry</p>
+          <ul>
+            <li>Multi-spectroscopic characterisation (UV-Vis, intrinsic/synchronous/3D fluorescence, CD) of glucose- and copper(II)-induced conformational change in BSA; glucose acts as a conformational primer that opens copper-binding sites.</li>
+            <li>Showed the glucose–copper interaction is non-additive: copper stabilises α-helical structure at low glucose, but this effect is lost at hyperglycaemic concentrations — consistent with albumin changes seen in diabetes.</li>
+            <li>Detected early Maillard intermediates (Schiff bases, Amadori products) via 3D EEM fluorescence.</li>
+            <li>Contributed to a parallel HSA–copper study; manuscript under review at <em>Discover Oncology</em>.</li>
+          </ul>
+          <div class="card-thumb"><div class="ph-label">FLUORESCENCE / CD SPECTRA FIGURE<br>or lab bench photo</div></div>
+        </div>
+
+        <div class="card">
+          <div class="role">Research Intern</div>
+          <div class="meta">Dec 2024 – Jun 2025 · AMU Aligarh</div>
+          <p style="font-size:13.5px;color:var(--slate);">Supervisor: Prof. Asad Ullah Khan, Interdisciplinary Biotechnology Unit</p>
+          <ul>
+            <li>Epidemiological assessment of colistin resistance across clinical and environmental samples via genomic data retrieval (NCBI), BLAST, and phylogenetic analysis (MEGAX, ResFinder, PlasmidFinder).</li>
+          </ul>
+          <div class="card-thumb"><div class="ph-label">PHYLOGENETIC TREE FIGURE<br>or IBU lab photo</div></div>
+        </div>
+
+        <div class="card">
+          <div class="role">Research Intern</div>
+          <div class="meta">Aug 2023 – Jan 2024 · AMU Aligarh</div>
+          <p style="font-size:13.5px;color:var(--slate);">Supervisor: Dr. Mohd Sajid Khan, Dept. of Biochemistry</p>
+          <ul>
+            <li>Synthesised amoxicillin-bioconjugated gold nanoparticles (Am-GNPs) using BSA as capping agent.</li>
+            <li>Characterised via UV-Vis, DLS, and Zeta potential; confirmed antimicrobial activity against <em>K. pneumoniae</em>, <em>S. abony</em>, and <em>B. pumilis</em>.</li>
+          </ul>
+          <div class="card-thumb"><div class="ph-label">TEM/SEM NANOPARTICLE IMAGE<br>or DLS plot</div></div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+</section>
+
+<!-- ============ PAGE: GALLERY ============ -->
+<section class="page" id="page-gallery">
+  <section class="bg-alt tight">
+    <div class="wrap">
+      <div class="codon-tag"><span class="base-trip"><span>U</span><span>A</span><span>C</span></span> Frame 02</div>
+      <h2 class="sec-title">In the Lab</h2>
+      <p class="sec-sub">A visual record of the instruments and moments behind the data — swap each tile below for your own photo (name the file to match the label for easy tracking).</p>
+    </div>
+  </section>
+
+  <section class="reveal">
+    <div class="wrap">
+      <div class="gallery-grid">
+        <div class="g-item g-wide">
+          <svg class="g-icon" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="var(--indigo)" stroke-width="1.2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 15l5-5 4 4 5-6 4 5"/></svg>
+          <div class="g-label">IISc Bengaluru — Lab Life</div>
+          <div class="g-sub">Wide shot: bench, team, or the DBG department</div>
+        </div>
+        <div class="g-item">
+          <svg class="g-icon" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--indigo)" stroke-width="1.2"><path d="M4 20h16M6 20V8l3-4h6l3 4v12"/><path d="M9 12h6"/></svg>
+          <div class="g-label">HPLC</div>
+          <div class="g-sub">Column / chromatogram run</div>
+        </div>
+        <div class="g-item">
+          <svg class="g-icon" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--indigo)" stroke-width="1.2"><circle cx="12" cy="9" r="5"/><path d="M9 20h6M12 14v6"/></svg>
+          <div class="g-label">Confocal Microscopy</div>
+          <div class="g-sub">Instrument or acquired image</div>
+        </div>
+        <div class="g-item">
+          <svg class="g-icon" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--indigo)" stroke-width="1.2"><rect x="4" y="4" width="16" height="16" rx="8"/><circle cx="12" cy="12" r="2.5"/></svg>
+          <div class="g-label">TEM</div>
+          <div class="g-sub">Nanoparticle micrograph</div>
+        </div>
+        <div class="g-item">
+          <svg class="g-icon" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--indigo)" stroke-width="1.2"><path d="M4 12a8 8 0 0116 0"/><path d="M4 12a8 8 0 0016 0" opacity="0.4"/></svg>
+          <div class="g-label">SEM</div>
+          <div class="g-sub">Surface morphology capture</div>
+        </div>
+        <div class="g-item">
+          <svg class="g-icon" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--indigo)" stroke-width="1.2"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/></svg>
+          <div class="g-label">Cryo-EM</div>
+          <div class="g-sub">Grid, sample chamber, or micrograph</div>
+        </div>
+        <div class="g-item g-wide">
+          <svg class="g-icon" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="var(--indigo)" stroke-width="1.2"><path d="M3 17l6-6 4 4 8-8"/><circle cx="19" cy="5" r="1.4"/></svg>
+          <div class="g-label">Conferences & Field Moments</div>
+          <div class="g-sub">Poster sessions, Summer School Indonesia, workshops</div>
+        </div>
+        <div class="g-item">
+          <svg class="g-icon" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--indigo)" stroke-width="1.2"><path d="M4 4h16v16H4z"/><path d="M4 9h16"/></svg>
+          <div class="g-label">Bench Work</div>
+          <div class="g-sub">PCR, gels, cloning — general shots</div>
+        </div>
+      </div>
+      <p style="margin-top:28px; font-family:var(--mono); font-size:12px; color:var(--slate-light);">Tip: keep a consistent aspect ratio (4:3) across your gallery photos for a clean grid — crop before uploading if needed.</p>
+    </div>
+  </section>
+</section>
+
+<!-- ============ PAGE: PUBLICATIONS ============ -->
+<section class="page" id="page-publications">
+  <section class="bg-dark on-dark tight">
+    <div class="wrap">
+      <div class="codon-tag on-dark"><span class="base-trip"><span>G</span><span>G</span><span>A</span></span> Frame 03</div>
+      <h2 class="sec-title">Publications, Posters & Talks</h2>
+      <p class="sec-sub">Manuscript, conference posters, and workshop presentations — with holders ready for your PDFs, poster scans, or embedded Google Slides.</p>
+    </div>
+  </section>
+
+  <section class="reveal">
+    <div class="wrap">
+      <div class="pub-item">
+        <div class="pub-tag">Manuscript — Under Review</div>
+        <h3>Temporal changes in the structure of Human Serum Albumin in the presence of copper may have implications in developing cancer chemotherapy and diagnosis</h3>
+        <p><em>Discover Oncology</em>, submitted (under review) — Contributing author.</p>
+      </div>
+
+      <div class="card-grid" style="margin-top:36px;">
+        <div>
+          <h3 style="font-family:var(--serif); font-size:17px; margin-bottom:14px;">Poster Presentation</h3>
+          <p style="font-size:13.5px; color:var(--slate); margin-bottom:12px;"><strong>MMS-Induced Toxicity and DNA Damage in Human Peripheral Lymphocytes</strong> — Drug Discovery 2025, Jamia Millia Islamia, New Delhi (Feb 2025)</p>
+          <div class="poster-holder">
+            <div class="ph-label">POSTER SCAN / PHOTO<br>Upload a high-res scan or<br>photo of your printed poster<br>(portrait, 3:4)</div>
+          </div>
+        </div>
+        <div>
+          <h3 style="font-family:var(--serif); font-size:17px; margin-bottom:14px;">Conference & Workshop Talks</h3>
+          <div class="timeline">
+            <div class="tl-item">
+              <div class="tl-date">Jun – Jul 2025</div>
+              <h3>5th Summer School — Multidisciplinary Collaboration & Innovation</h3>
+              <p>Airlangga University, Indonesia</p>
+            </div>
+            <div class="tl-item">
+              <div class="tl-date">Oct 2024</div>
+              <h3>1st J&K International Conference on Breast Cancer</h3>
+              <p>University of Kashmir</p>
+            </div>
+            <div class="tl-item">
+              <div class="tl-date">Mar 2023</div>
+              <h3>Bio-IT Workshop — Single Cell Data Analysis</h3>
+              <p>Institute of Bioinformatics and Applied Biotechnology, Bangalore</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h3 style="font-family:var(--serif); font-size:17px; margin:40px 0 12px;">Embed a Slide Deck</h3>
+      <p style="font-size:13.5px;color:var(--slate); max-width:60ch;">To embed a thesis defence deck or conference talk: open your Google Slides file → <em>Share → Publish to web → Embed</em> → copy the <code>&lt;iframe&gt;</code> code and paste it in place of the holder below.</p>
+      <div class="slide-holder">
+        <!-- Replace this div with your Google Slides embed <iframe>, e.g.:
+        <iframe src="https://docs.google.com/presentation/d/e/YOUR_ID/embed?start=false&loop=false" width="100%" height="100%" frameborder="0"></iframe>
+        -->
+        <div class="ph-label">GOOGLE SLIDES / PPT EMBED<br>Paste your published iframe embed code here</div>
+      </div>
+    </div>
+  </section>
+</section>
+
+<!-- ============ PAGE: SKILLS ============ -->
+<section class="page" id="page-skills">
+  <section class="bg-alt tight">
+    <div class="wrap">
+      <div class="codon-tag"><span class="base-trip"><span>C</span><span>C</span><span>U</span></span> Frame 04</div>
+      <h2 class="sec-title">Skills & Techniques</h2>
+      <p class="sec-sub">A working toolkit that spans simulation, sequence, bench, and spectroscopy.</p>
+    </div>
+  </section>
+
+  <section class="reveal">
+    <div class="wrap">
+      <div class="skill-block">
+        <h3>Computational</h3>
+        <div class="pill-row">
+          <span class="pill">GROMACS</span><span class="pill">AMBER14SB</span><span class="pill">Python (pandas, numpy, scipy, matplotlib, seaborn, statsmodels)</span>
+          <span class="pill">RBS Calculator</span><span class="pill">RNAfold (ViennaRNA)</span><span class="pill">RELION</span>
+          <span class="pill">MODELLER</span><span class="pill">UCSF Chimera</span><span class="pill">DAMBE</span>
+          <span class="pill">BLAST</span><span class="pill">MEGAX</span><span class="pill">ResFinder</span><span class="pill">PlasmidFinder</span>
+        </div>
+      </div>
+      <div class="skill-block">
+        <h3>Molecular Biology</h3>
+        <div class="pill-row">
+          <span class="pill">PCR / gradient PCR</span><span class="pill">Competent cell prep</span><span class="pill">Bacterial transformation</span>
+          <span class="pill">Plasmid purification</span><span class="pill">Restriction digestion</span><span class="pill">Protein expression & purification</span>
+          <span class="pill">Agarose gel electrophoresis</span><span class="pill">SDS-PAGE</span><span class="pill">Western blot</span>
+          <span class="pill">Sucrose gradient experiments</span><span class="pill">β-galactosidase reporter assay</span>
+        </div>
+      </div>
+      <div class="skill-block">
+        <h3>Microbiology</h3>
+        <div class="pill-row">
+          <span class="pill"><em>E. coli</em> culture (Top10, DH5α)</span><span class="pill">Antimicrobial susceptibility testing</span>
+          <span class="pill">Nanoparticle synthesis & bioconjugation</span>
+        </div>
+      </div>
+      <div class="skill-block">
+        <h3>Biophysics</h3>
+        <div class="pill-row">
+          <span class="pill">UV-Vis</span><span class="pill">CD</span><span class="pill">Intrinsic / synchronous / 3D fluorescence</span>
+          <span class="pill">DLS</span><span class="pill">Zeta potential</span>
+        </div>
+      </div>
+    </div>
+  </section>
+</section>
+
+<!-- ============ PAGE: HONOURS ============ -->
+<section class="page" id="page-honours">
+  <section class="bg-dark on-dark tight">
+    <div class="wrap">
+      <div class="codon-tag on-dark"><span class="base-trip"><span>A</span><span>A</span><span>G</span></span> Frame 05</div>
+      <h2 class="sec-title">Honours, Certifications & Leadership</h2>
+      <p class="sec-sub">Recognition, credentials, and time spent outside the lab.</p>
+    </div>
+  </section>
+
+  <section class="reveal">
+    <div class="wrap">
+      <div class="card-grid">
+        <div>
+          <h3 style="font-family:var(--serif); font-size:17px; margin-bottom:16px;">Honours & Awards</h3>
+          <div class="timeline">
+            <div class="tl-item"><div class="tl-date">2025</div><h3>GATE (XL, Life Sciences) — Qualified</h3><p>IIT Roorkee</p></div>
+            <div class="tl-item"><div class="tl-date">2025</div><h3>IIT JAM (BT, Biotechnology) — Qualified</h3><p>IIT Delhi</p></div>
+            <div class="tl-item"><div class="tl-date">2025–26</div><h3>Sir Syed Mentorship and Assistance Fellowship (SSMAF)</h3><p>Awardee</p></div>
+            <div class="tl-item"><div class="tl-date">2024–25</div><h3>Mrs. Zakia Saleemuddin Scholarship</h3><p>Merit scholarship for academic excellence, AMU</p></div>
+          </div>
+        </div>
+        <div>
+          <h3 style="font-family:var(--serif); font-size:17px; margin-bottom:16px;">Certifications</h3>
+          <div class="pill-row" style="margin-bottom:28px;">
+            <span class="pill" style="background:transparent; border-color:var(--line-dark); color:#EAF0EF;">Bioinformatics Specialization — Coursera, UC San Diego</span>
+            <span class="pill" style="background:transparent; border-color:var(--line-dark); color:#EAF0EF;">Getting Started in Cryo-EM — Coursera, Caltech</span>
+            <span class="pill" style="background:transparent; border-color:var(--line-dark); color:#EAF0EF;">Molecular Docking & Lead Discovery — Biopractify, Jul 2025</span>
+          </div>
+          <h3 style="font-family:var(--serif); font-size:17px; margin-bottom:16px;">Leadership & Extracurricular</h3>
+          <ul style="display:flex; flex-direction:column; gap:10px;">
+            <li style="font-size:14px; color:#B9C6CA;">Student Representative, Anti-Ragging Committee, Dept. of Biochemistry, AMU</li>
+            <li style="font-size:14px; color:#B9C6CA;">Class Representative, B.Sc. Biochemistry, AMU — built a resource-sharing platform used by 100+ students</li>
+            <li style="font-size:14px; color:#B9C6CA;">PR Coordinator, Training and Placement Office, AMU</li>
+            <li style="font-size:14px; color:#B9C6CA;">PR Committee Member, AMU Literary Festival 7.0 (May 2023)</li>
+            <li style="font-size:14px; color:#B9C6CA;">Volunteer, National Service Scheme, AMU (Nov 2022 – Nov 2024)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+</section>
+
+<!-- ============ PAGE: CONTACT ============ -->
+<section class="page" id="page-contact">
+  <div class="bg-dark on-dark" style="padding:96px 0;">
+    <div class="wrap">
+      <div class="codon-tag on-dark"><span class="base-trip"><span>U</span><span>G</span><span>A</span></span> End of frame</div>
+      <h2 class="sec-title">Let's talk research</h2>
+      <p class="sec-sub" style="max-width:52ch;">Open to PhD supervisors, collaborators, and anyone curious about ribosomes reading codons they weren't quite built for.</p>
+      <div class="contact-grid" style="margin-top:20px;">
+        <div>
+          <div class="contact-line"><span class="clabel">Email</span><a href="mailto:mukhtartalha727@gmail.com">mukhtartalha727@gmail.com</a></div>
+          <div class="contact-line"><span class="clabel">Phone</span><a href="tel:+917533848521">+91 7533848521</a></div>
+          <div class="contact-line"><span class="clabel">LinkedIn</span><a href="https://linkedin.com/in/talhamukhtar" target="_blank" rel="noopener">linkedin.com/in/talhamukhtar</a></div>
+        </div>
+        <div class="portrait-holder" style="aspect-ratio:16/9;">
+          <div class="ph-label">MAP / OFFICE PHOTO / QR CODE<br>Optional — e.g. a QR code linking<br>to your CV PDF or LinkedIn</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>© 2026 TALHA MUKHTAR — BUILT FOR ACADEMIC PORTFOLIO USE</footer>
+
+<script>
+(function(){
+  var pages = document.querySelectorAll('.page');
+  var navLinks = document.querySelectorAll('.nav-frame a, [data-page]');
+  var navFrame = document.getElementById('navFrame');
+  var navToggle = document.getElementById('navToggle');
+
+  function showPage(id){
+    pages.forEach(function(p){ p.classList.toggle('active', p.id === 'page-' + id); });
+    document.querySelectorAll('.nav-frame a').forEach(function(a){
+      a.classList.toggle('active', a.getAttribute('data-page') === id);
+    });
+    window.scrollTo({top:0, behavior:'instant' in window ? 'instant' : 'auto'});
+  }
+
+  function routeFromHash(){
+    var id = (location.hash || '#home').replace('#','');
+    var valid = ['home','research','gallery','publications','skills','honours','contact'];
+    if(valid.indexOf(id) === -1) id = 'home';
+    showPage(id);
+  }
+
+  navLinks.forEach(function(link){
+    link.addEventListener('click', function(e){
+      var target = link.getAttribute('data-page');
+      if(target){
+        e.preventDefault();
+        location.hash = '#' + target;
+        routeFromHash();
+        navFrame.classList.remove('open');
+      }
+    });
+  });
+
+  navToggle.addEventListener('click', function(){
+    navFrame.classList.toggle('open');
+  });
+
+  window.addEventListener('hashchange', routeFromHash);
+  routeFromHash();
+
+  // scroll reveal
+  var revealEls = document.querySelectorAll('.reveal');
+  if('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting){ entry.target.classList.add('in'); }
+      });
+    }, {threshold:0.08});
+    revealEls.forEach(function(el){ io.observe(el); });
+  } else {
+    revealEls.forEach(function(el){ el.classList.add('in'); });
+  }
+})();
+</script>
+</body>
+</html>
