@@ -10,18 +10,18 @@
 <style>
 /* ============ TOKENS ============ */
 :root{
-  --ink:#0A1628;
-  --ink-2:#101F38;
-  --paper:#EEF1EE;
-  --paper-2:#E4E8E2;
-  --teal:#14919B;
-  --teal-dim:#0E6B72;
-  --amber:#E2A23B;
+  --ink:#101826;
+  --ink-2:#182338;
+  --paper:#FAFAF8;
+  --paper-2:#F0F1EC;
+  --teal:#0F7A82;
+  --teal-dim:#0C5E64;
+  --amber:#C98A2E;
   --indigo:#1B2740;
   --slate:#5B6B7C;
   --slate-light:#8996A3;
   --line:rgba(27,39,64,0.12);
-  --line-dark:rgba(255,255,255,0.14);
+  --line-dark:rgba(27,39,64,0.14);
   --radius:2px;
   --serif:'Fraunces', serif;
   --sans:'IBM Plex Sans', sans-serif;
@@ -71,8 +71,8 @@ ul{list-style:none;}
 /* ============ NAV — "reading frame" strip ============ */
 header.site-nav{
   position:fixed; top:0; left:0; right:0; z-index:100;
-  background:rgba(10,22,40,0.92); backdrop-filter:blur(6px);
-  border-bottom:1px solid var(--line-dark);
+  background:rgba(250,250,248,0.92); backdrop-filter:blur(6px);
+  border-bottom:1px solid var(--line);
 }
 .nav-inner{
   max-width:1120px; margin:0 auto; padding:0 32px;
@@ -80,29 +80,29 @@ header.site-nav{
   height:64px;
 }
 .nav-brand{
-  font-family:var(--serif); font-weight:600; font-size:19px; color:#F2F4F1; letter-spacing:0.01em;
+  font-family:var(--serif); font-weight:600; font-size:19px; color:var(--indigo); letter-spacing:0.01em;
 }
 .nav-brand .dot{color:var(--teal);}
 .nav-frame{
   display:flex; gap:2px; font-family:var(--mono); font-size:12.5px; letter-spacing:0.06em;
 }
 .nav-frame a{
-  padding:9px 12px; color:var(--slate-light); border-bottom:2px solid transparent;
+  padding:9px 12px; color:var(--slate); border-bottom:2px solid transparent;
   transition:color .18s ease, border-color .18s ease;
   text-transform:uppercase;
 }
-.nav-frame a:hover{color:#EAF6F5;}
-.nav-frame a.active{color:var(--teal); border-bottom-color:var(--teal);}
-.nav-toggle{display:none; background:none; border:1px solid var(--line-dark); color:#EAF6F5; width:38px; height:38px; border-radius:2px; font-family:var(--mono);}
+.nav-frame a:hover{color:var(--indigo);}
+.nav-frame a.active{color:var(--teal-dim); border-bottom-color:var(--teal);}
+.nav-toggle{display:none; background:none; border:1px solid var(--line); color:var(--indigo); width:38px; height:38px; border-radius:2px; font-family:var(--mono);}
 @media (max-width:880px){
   .nav-frame{
-    position:fixed; top:64px; left:0; right:0; background:var(--ink);
+    position:fixed; top:64px; left:0; right:0; background:var(--paper);
     flex-direction:column; padding:8px 24px 18px; gap:0;
-    border-bottom:1px solid var(--line-dark);
+    border-bottom:1px solid var(--line);
     transform:translateY(-8px); opacity:0; pointer-events:none; transition:all .2s ease;
   }
   .nav-frame.open{transform:translateY(0); opacity:1; pointer-events:auto;}
-  .nav-frame a{padding:12px 0; border-bottom:1px solid var(--line-dark);}
+  .nav-frame a{padding:12px 0; border-bottom:1px solid var(--line);}
   .nav-toggle{display:block;}
 }
 
@@ -112,27 +112,36 @@ header.site-nav{
 
 /* ============ HERO ============ */
 .hero{
-  background:linear-gradient(180deg, var(--ink) 0%, var(--ink-2) 100%);
-  color:#EAF0EF; position:relative; overflow:hidden;
-  padding:96px 0 84px;
+  background:var(--paper);
+  color:var(--indigo); position:relative; overflow:hidden;
+  padding:132px 0 84px;
+  border-bottom:1px solid var(--line);
+}
+/* subtle full-bleed structure-image watermark behind the hero text —
+   replace hero-bg.jpg with any ribosome/PyMOL render; it sits low-opacity so text stays readable */
+.hero::before{
+  content:""; position:absolute; inset:0; pointer-events:none;
+  background-image:url('images/hero-bg.jpg');
+  background-size:cover; background-position:center;
+  opacity:0.07; mix-blend-mode:multiply;
 }
 .hero::after{
-  content:""; position:absolute; inset:0; pointer-events:none; opacity:0.5;
+  content:""; position:absolute; inset:0; pointer-events:none; opacity:0.6;
   background-image:
-    radial-gradient(circle at 82% 18%, rgba(20,145,155,0.22), transparent 42%),
-    radial-gradient(circle at 12% 82%, rgba(226,162,59,0.10), transparent 40%);
+    radial-gradient(circle at 85% 12%, rgba(15,122,130,0.08), transparent 42%),
+    radial-gradient(circle at 8% 88%, rgba(201,138,46,0.07), transparent 40%);
 }
-.hero-grid{display:grid; grid-template-columns:1.15fr 0.85fr; gap:56px; align-items:center; position:relative;}
+.hero-grid{display:grid; grid-template-columns:1.1fr 0.9fr; gap:56px; align-items:center; position:relative;}
 @media (max-width:880px){.hero-grid{grid-template-columns:1fr; gap:40px;}}
 .hero h1{
-  font-family:var(--serif); font-weight:600; font-size:clamp(34px,4.6vw,56px);
-  line-height:1.06; letter-spacing:-0.01em; color:#F5F8F6;
+  font-family:var(--serif); font-weight:600; font-size:clamp(32px,4.4vw,52px);
+  line-height:1.1; letter-spacing:-0.01em; color:var(--indigo);
 }
-.hero h1 em{font-style:italic; color:var(--teal); font-weight:500;}
+.hero h1 em{font-style:italic; color:var(--teal-dim); font-weight:500;}
 .hero .tagline{
-  margin-top:18px; font-size:18px; color:#B9C6CA; max-width:46ch; line-height:1.65;
+  margin-top:20px; font-size:17.5px; color:var(--slate); max-width:48ch; line-height:1.7;
 }
-.hero .tagline strong{color:#EAF0EF; font-weight:600;}
+.hero .tagline strong{color:var(--indigo); font-weight:600;}
 .hero-actions{display:flex; gap:12px; margin-top:32px; flex-wrap:wrap;}
 .btn{
   font-family:var(--mono); font-size:13px; letter-spacing:0.04em; text-transform:uppercase;
@@ -140,26 +149,27 @@ header.site-nav{
   transition:transform .15s ease, background .15s ease, border-color .15s ease;
 }
 .btn:hover{transform:translateY(-2px);}
-.btn-primary{background:var(--teal); color:#04211F;}
-.btn-primary:hover{background:#1AA6AF;}
-.btn-ghost{border-color:var(--line-dark); color:#EAF0EF;}
-.btn-ghost:hover{border-color:var(--teal); color:var(--teal);}
+.btn-primary{background:var(--teal); color:#FFFFFF;}
+.btn-primary:hover{background:var(--teal-dim);}
+.btn-ghost{border-color:var(--line); color:var(--indigo);}
+.btn-ghost:hover{border-color:var(--teal); color:var(--teal-dim);}
 
+/* framed portrait photo — swap in images/portrait.jpg (see instructions) */
 .portrait-holder{
-  aspect-ratio:4/5; border:1.5px dashed rgba(234,246,245,0.35); border-radius:3px;
-  display:flex; align-items:center; justify-content:center; text-align:center;
-  background:rgba(255,255,255,0.03); padding:22px;
+  aspect-ratio:4/5; border-radius:3px; overflow:hidden; position:relative;
+  background:var(--paper-2); border:1px solid var(--line);
+  box-shadow:0 24px 48px -28px rgba(27,39,64,0.35);
 }
-.portrait-holder .ph-label{font-family:var(--mono); font-size:12px; color:#9FB2B4; letter-spacing:0.05em; line-height:1.7;}
-.portrait-holder svg{opacity:0.55; margin-bottom:10px;}
-
-.stat-strip{
-  margin-top:56px; padding-top:32px; border-top:1px solid var(--line-dark);
-  display:grid; grid-template-columns:repeat(4,1fr); gap:24px;
+.portrait-holder img{width:100%; height:100%; object-fit:cover;}
+.portrait-holder .ph-fallback{
+  position:absolute; inset:0; display:flex; align-items:center; justify-content:center; text-align:center; padding:22px;
 }
-@media (max-width:720px){.stat-strip{grid-template-columns:repeat(2,1fr);}}
-.stat-strip .stat b{font-family:var(--serif); font-size:30px; color:var(--teal); font-weight:600; display:block;}
-.stat-strip .stat span{font-size:12.5px; color:#9FB2B4; line-height:1.5; display:block; margin-top:4px;}
+.portrait-holder .ph-label{font-family:var(--mono); font-size:12px; color:var(--slate-light); letter-spacing:0.05em; line-height:1.7;}
+.portrait-holder svg{opacity:0.5; margin-bottom:10px;}
+.portrait-caption{
+  margin-top:14px; font-family:var(--mono); font-size:11.5px; color:var(--slate-light);
+  letter-spacing:0.04em; text-align:center;
+}
 
 /* ============ GENERIC SECTION ============ */
 section{padding:88px 0;}
@@ -300,27 +310,26 @@ footer{
   <div class="hero">
     <div class="wrap hero-grid">
       <div>
-        <div class="codon-tag on-dark">
+        <div class="codon-tag">
           <span class="base-trip"><span>A</span><span>U</span><span>G</span></span> Start of frame
         </div>
-        <h1>Reading the message<br>a ribosome <em>almost</em><br>can't read.</h1>
-        <p class="tagline"><strong>Talha Mukhtar</strong> — B.Sc. (Research) Biochemistry, Aligarh Muslim University. I study how ribosomes recognise non-optimal start codons and Shine-Dalgarno contexts, using all-atom molecular dynamics, structural bioinformatics, and multi-spectroscopic protein biophysics. Headed toward a PhD in structural or RNA biology.</p>
+        <h1>Structure first.<br><em>Function follows.</em></h1>
+        <p class="tagline"><strong>Talha Mukhtar</strong> — I'm a Biochemistry graduate from Aligarh Muslim University chasing one question through every method I can find: how does the shape of a molecule decide what it's allowed to do? I've followed it through ribosome simulations, protein spectroscopy, and cloning benches alike — and I'm now looking for a PhD in structural or RNA biology where I can keep doing both.</p>
         <div class="hero-actions">
           <a href="#research" class="btn btn-primary" data-page="research">View Research →</a>
           <a href="#contact" class="btn btn-ghost" data-page="contact">Get in Touch</a>
           <a href="mailto:mukhtartalha727@gmail.com" class="btn btn-ghost">Email Me</a>
         </div>
-        <div class="stat-strip">
-          <div class="stat"><b>170 ns</b><span>All-atom MD simulation of ribosomal complex (5LMQ)</span></div>
-          <div class="stat"><b>~4,000</b><span>E. coli SD-led genes analysed genome-wide</span></div>
-          <div class="stat"><b>5</b><span>Independent research placements since 2023</span></div>
-          <div class="stat"><b>1</b><span>Manuscript under review — Discover Oncology</span></div>
-        </div>
       </div>
       <div class="portrait-holder">
-        <div>
-          <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#EAF6F5" stroke-width="1.2"><circle cx="12" cy="12" r="9"/><path d="M8 12h8M12 8v8"/></svg>
-          <div class="ph-label">PORTRAIT PHOTO<br>Replace with a professional<br>headshot (recommended 4:5,<br>min. 1000×1250px)</div>
+        <img src="images/portrait.jpg" alt="Talha Mukhtar"
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+             onload="this.nextElementSibling.style.display='none';">
+        <div class="ph-fallback">
+          <div>
+            <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="#8996A3" stroke-width="1.2"><circle cx="12" cy="12" r="9"/><path d="M8 12h8M12 8v8"/></svg>
+            <div class="ph-label">PORTRAIT PHOTO<br>Upload as <strong>images/portrait.jpg</strong><br>(recommended 4:5 ratio)</div>
+          </div>
         </div>
       </div>
     </div>
@@ -331,7 +340,7 @@ footer{
     <div class="wrap">
       <div class="codon-tag"><span class="base-trip"><span>G</span><span>C</span><span>A</span></span> About</div>
       <h2 class="sec-title">A biochemist who thinks in structures</h2>
-      <p class="sec-sub">My work sits at the interface of computation and the bench: I move between GROMACS trajectories and gel electrophoresis in the same week. I'm most interested in the moments where a molecule's structure explains a biological decision — why a ribosome initiates translation at a "wrong" codon, or why a protein's fold shifts under glucose and copper together.</p>
+      <p class="sec-sub">I care about connecting a molecule's structure to what it actually does inside a cell — why a ribosome starts translating at an unusual codon, or how a protein's conformation responds to its environment. I like staying close to the data itself: running simulations, but just as often generating that data myself at the bench, through cloning, expression, and spectroscopy. I'm building toward a research career that keeps both sides — computational and experimental — in the same hands.</p>
       <div class="card-grid" style="grid-template-columns:1fr 1fr;">
         <div class="card">
           <div class="role">Aligarh Muslim University</div>
